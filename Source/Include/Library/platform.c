@@ -154,3 +154,58 @@ void PlatformWriteConsole(char *String)
     #error
 #endif
 }
+
+void *PlatformAllocateMemory(uptr Size)
+{
+    void *Result = 0;
+
+    if(Size <= 0)
+    {
+        Log("Size is %d", Size);
+        return Result;
+    }
+
+#ifdef WINDOWS_OS
+    Result = VirtualAlloc(0, Size, MEM_COMMIT | MEM_RESERVE, PAGE_READWRITE);
+    if(!Result)
+    {
+        Log("VirtualAlloc failed: 0x%X\n", GetLastError());
+        return Result;
+    }
+#else
+    #error
+#endif
+
+    return Result;    
+}
+
+bool PlatformFreeMemory(void *Memory)
+{
+    bool Result = 0;
+
+    if(!Memory)
+    {
+        Log("Memory is %p", Memory);
+        return Result;
+    }
+
+#ifdef WINDOWS_OS
+    if(!VirtualFree(Memory, 0, MEM_RELEASE))
+    {
+        Log("VirtualAlloc failed: 0x%X\n", GetLastError());
+        return Result;
+    }
+#else
+    #error
+#endif
+
+    Result = 1;
+    return Result;
+}
+
+bool PlatformReadFile(file *File, char *FileName)
+{
+    bool Result = 0;
+
+    return Result;
+}
